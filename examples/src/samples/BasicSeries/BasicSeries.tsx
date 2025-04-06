@@ -7,10 +7,12 @@ import {
   useTabStore,
 } from "./basicSeriesStore";
 import { ChartWidgetCard } from "../../ui/ChartWidgetCard";
+import { useState } from "react";
 
 const BasicSeries = () => {
   const { activeTab, setActiveTab } = useTabStore();
   const { seriesData, seriesComponent: Component } = useSeriesStore();
+  const [showPriceAxis, setShowPriceAxis] = useState(false);
 
   const a11yProps = (key: string) => ({
     id: `line-series-tab-${key}`,
@@ -22,6 +24,8 @@ const BasicSeries = () => {
       title="Basic series"
       subTitle="Different series types basic usage"
     >
+      <button onClick={() => setShowPriceAxis(state => !state)}>切换价格轴</button>
+      {showPriceAxis.toString()}
       <Tabs
         value={activeTab}
         onChange={(_, newValue) => setActiveTab(newValue)}
@@ -31,7 +35,8 @@ const BasicSeries = () => {
           <Tab key={key} value={key} label={key} {...a11yProps(key)} />
         ))}
       </Tabs>
-      <Chart height={400} {...chartCommonOptions} autoSize>
+
+      <Chart height={400} {...chartCommonOptions} rightPriceScale={{ visible: showPriceAxis }} autoSize>
         {Component && <Component data={seriesData} />}
       </Chart>
     </ChartWidgetCard>

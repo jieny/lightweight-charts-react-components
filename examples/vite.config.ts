@@ -7,7 +7,7 @@ const env = loadEnv("", process.cwd());
 
 export default defineConfig({
   server: {
-    port: Number(process.env.PORT) || 5173,
+    port: Number(process.env.PORT) || 5175,
   },
   plugins: [react(), viteCompression()],
   build: {
