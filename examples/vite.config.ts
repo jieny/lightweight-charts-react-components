@@ -131,7 +131,7 @@ export const htmlConfig: Options = {
 
 export default defineConfig({
   server: {
-    port: Number(env.PORT) || 5173,
+    port: Number(env.PORT) || 5175,
   },
   plugins: [react(), viteCompression(), htmlPlugin(htmlConfig)],
   build: {
