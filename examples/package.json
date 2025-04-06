@@ -2,6 +2,7 @@
   "name": "lightweight-charts-react-components-examples",
   "version": "0.0.1",
   "description": "Examples for Lightweight Charts React Components",
+  "homepage": "https://ukorvl.github.io/lightweight-charts-react-components",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,13 +13,15 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
     "dayjs": "^1.11.13",
-    "vite-plugin-compression": "^0.5.1"
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-html-config": "^2.0.2"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.4.9",
+    "@mui/icons-material": "^6.4.10",
     "@mui/material": "^6.4.7",
+    "copy-to-clipboard": "^3.3.3",
     "lightweight-charts-react-components": "0.2.0",
     "react": "^18.3.1",
     "react-dom": "18.3.1",

@@ -1,5 +1,5 @@
 import { colors } from "@/colors";
-import { ChartOptions, DeepPartial } from "lightweight-charts";
+import type { ChartOptions, DeepPartial } from "lightweight-charts";
 
 export const chartCommonOptions = {
   layout: {
@@ -8,7 +8,7 @@ export const chartCommonOptions = {
     background: {
       color: "transparent",
     },
-    textColor: colors.lightBlue,
+    textColor: colors.blue,
   },
   grid: {
     vertLines: {
@@ -20,12 +20,12 @@ export const chartCommonOptions = {
   },
   crosshair: {
     vertLine: {
-      style: 0,
-      color: colors.lightBlue,
+      style: 3,
+      color: colors.gray,
     },
     horzLine: {
-      style: 0,
-      color: colors.lightBlue,
+      style: 3,
+      color: colors.gray,
     },
   },
 } satisfies DeepPartial<ChartOptions>;

@@ -1,6 +1,6 @@
 {
   "name": "lightweight-charts-react-components",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "build": "rslib build",
     "dev": "rslib build --watch"
@@ -52,10 +52,10 @@
   "devDependencies": {
     "@microsoft/api-extractor": "^7.52.1",
     "@rsbuild/plugin-react": "^1.1.0",
-    "@rslib/core": "^0.5.5",
-    "@types/react": "^19.0.2",
-    "@types/react-dom": "^19.0.2",
+    "@rslib/core": "^0.6.1",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
     "rsbuild-plugin-dts": "^0.5.5",
-    "vitest": "^3.0.9"
+    "vitest": "^3.1.1"
   }
 }

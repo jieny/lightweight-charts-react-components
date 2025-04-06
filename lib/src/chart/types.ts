@@ -1,11 +1,11 @@
-import type {
-  ChartOptions as ChartNativeOptions,
-  DeepPartial,
-  IChartApi,
-  MouseEventHandler,
-  Time,
+import {
+  type ChartOptions as ChartNativeOptions,
+  type DeepPartial,
+  type IChartApi,
+  type MouseEventHandler,
+  type Time,
 } from "lightweight-charts";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export type ChartOptions = {
   onClick?: MouseEventHandler<Time>;
@@ -21,6 +21,11 @@ export type ChartProps = {
 export type ChartApiRef = {
   _chart: IChartApi | null;
   api: () => IChartApi | null;
+  init: () => IChartApi | null;
   clear: () => void;
-  destroyed: boolean;
 };
+
+export interface IChartContext {
+  chartApiRef: ChartApiRef | null;
+  initialized: boolean;
+}

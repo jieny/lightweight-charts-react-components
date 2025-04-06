@@ -1,23 +1,27 @@
-import { useLayoutEffect, useRef } from "react";
-import { MarkersApiRef, MarkersProps } from "./types";
 import { createSeriesMarkers } from "lightweight-charts";
-import { useSafeContext } from "@/shared/useSafeContext";
+import { useLayoutEffect, useRef } from "react";
 import { SeriesContext } from "@/series/SeriesContext";
+import { useSafeContext } from "@/shared/useSafeContext";
+import type { MarkersApiRef, MarkersProps } from "./types";
 
-export const useInitMarkers = ({ reactive, markers }: MarkersProps) => {
-  const series = useSafeContext(SeriesContext);
+export const useMarkers = ({ reactive = true, markers }: MarkersProps) => {
+  const { initialized: seriesInitialized, seriesApiRef: series } =
+    useSafeContext(SeriesContext);
 
   const markersApiRef = useRef<MarkersApiRef>({
     _markers: null,
     api() {
-      if (!this._markers && !this.destroyed) {
-        const seriesApi = series.api();
+      return this._markers;
+    },
+    init() {
+      if (this._markers === null) {
+        const seriesApi = series?.api();
 
         if (!seriesApi) {
           return null;
         }
 
-        this._markers = createSeriesMarkers(seriesApi, []);
+        this._markers = createSeriesMarkers(seriesApi, markers);
       }
 
       return this._markers;
@@ -26,15 +30,17 @@ export const useInitMarkers = ({ reactive, markers }: MarkersProps) => {
       if (this._markers !== null) {
         this._markers.detach();
         this._markers = null;
-        this.destroyed = true;
       }
     },
-    destroyed: false,
   });
 
   useLayoutEffect(() => {
-    markersApiRef.current.api();
+    if (!seriesInitialized) return;
 
+    markersApiRef.current.init();
+  }, [seriesInitialized]);
+
+  useLayoutEffect(() => {
     return () => {
       markersApiRef.current.clear();
     };

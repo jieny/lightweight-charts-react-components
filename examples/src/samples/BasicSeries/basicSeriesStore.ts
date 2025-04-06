@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { createStubArray } from "@/common/utils";
-import { SeriesDataItemTypeMap } from "lightweight-charts";
 import {
   AreaSeries,
   BarSeries,
@@ -10,10 +6,21 @@ import {
   HistogramSeries,
   LineSeries,
 } from "lightweight-charts-react-components";
-import { ComponentType } from "react";
 import { create } from "zustand";
+import { colors } from "@/colors";
+import { generateLineData, generateOHLCData } from "@/common/generateSeriesData";
+import type { SeriesDataItemTypeMap } from "lightweight-charts";
+import type { SeriesProps } from "lightweight-charts-react-components";
+import type { ComponentType } from "react";
 
 type BasicSeriesType = Exclude<keyof SeriesDataItemTypeMap, "Custom">;
+
+type BasicSeriesMap<K extends BasicSeriesType> = {
+  [key in K]: {
+    Component: ComponentType<SeriesProps<K>>;
+    options?: SeriesProps<K>["options"];
+  };
+};
 
 interface TabStore {
   activeTab: BasicSeriesType;
@@ -21,62 +28,53 @@ interface TabStore {
 }
 
 interface SeriesDataStore {
-  seriesComponent: ComponentType<any> | null;
-  seriesData: any[];
-  setSeriesData: (data: any) => void;
-  setSeriesComponent: (Component: ComponentType<any> | null) => void;
+  seriesComponent: ComponentType<SeriesProps<BasicSeriesType>> | null;
+  seriesData: SeriesDataItemTypeMap[BasicSeriesType][];
+  setSeriesData: (data: SeriesDataItemTypeMap[BasicSeriesType][]) => void;
+  setSeriesComponent: (
+    Component: ComponentType<SeriesProps<BasicSeriesType>> | null
+  ) => void;
 }
 
-const basicSeriesMap = new Map<
-  BasicSeriesType,
-  {
-    Component: ComponentType<any>;
-    codeSnippetPath: string;
-  }
->([
-  [
-    "Line",
-    {
-      Component: LineSeries,
-      codeSnippetPath: "/ls",
+const timeSeriesData = generateLineData(50);
+const ohlcSeriesData = generateOHLCData(50);
+
+const basicSeriesMap: BasicSeriesMap<BasicSeriesType> = {
+  Candlestick: {
+    Component: CandlestickSeries,
+  },
+  Line: {
+    Component: LineSeries,
+  },
+  Bar: {
+    Component: BarSeries,
+  },
+  Area: {
+    Component: AreaSeries,
+    options: {
+      topColor: colors.pink,
+      bottomColor: `${colors.pink}20`,
+      lineColor: colors.pink,
     },
-  ],
-  [
-    "Bar",
-    {
-      Component: BarSeries,
-      codeSnippetPath: "/bs",
+  },
+  Histogram: {
+    Component: HistogramSeries,
+  },
+  Baseline: {
+    Component: BaselineSeries,
+    options: {
+      baseValue: {
+        type: "price",
+        price:
+          (Math.min(...timeSeriesData.map(item => item.value)) +
+            Math.max(...timeSeriesData.map(item => item.value))) /
+          2,
+      },
+      topLineColor: colors.green,
+      bottomLineColor: colors.red,
     },
-  ],
-  [
-    "Area",
-    {
-      Component: AreaSeries,
-      codeSnippetPath: "/as",
-    },
-  ],
-  [
-    "Histogram",
-    {
-      Component: HistogramSeries,
-      codeSnippetPath: "/hs",
-    },
-  ],
-  [
-    "Baseline",
-    {
-      Component: BaselineSeries,
-      codeSnippetPath: "/bls",
-    },
-  ],
-  [
-    "Candlestick",
-    {
-      Component: CandlestickSeries,
-      codeSnippetPath: "/cs",
-    },
-  ],
-]);
+  },
+};
 
 const getSeriesDataByTab = (tab: BasicSeriesType) => {
   switch (tab) {
@@ -94,39 +92,24 @@ const getSeriesDataByTab = (tab: BasicSeriesType) => {
   }
 };
 
-const dataStub = createStubArray(30);
-
-const timeSeriesData = dataStub.map((_, i) => ({
-  time: `2024-03-${String(i + 1).padStart(2, "0")}`,
-  value: Math.floor(Math.random() * 100),
+const useTabStore = create<TabStore>(set => ({
+  activeTab: "Candlestick",
+  setActiveTab: tab => set({ activeTab: tab }),
 }));
 
-const ohlcSeriesData = dataStub.map((_, i) => ({
-  time: `2024-03-${String(i + 1).padStart(2, "0")}`,
-  open: Math.random() * 100,
-  high: Math.random() * 100,
-  low: Math.random() * 100,
-  close: Math.random() * 100,
-}));
-
-const useTabStore = create<TabStore>((set) => ({
-  activeTab: "Line",
-  setActiveTab: (tab) => set({ activeTab: tab }),
-}));
-
-const useSeriesStore = create<SeriesDataStore>((set) => ({
-  seriesComponent: LineSeries,
+const useSeriesStore = create<SeriesDataStore>(set => ({
+  seriesComponent: CandlestickSeries,
   seriesData: getSeriesDataByTab(useTabStore.getState().activeTab),
-  setSeriesData: (data) => set({ seriesData: data }),
-  setSeriesComponent: (Component) => set({ seriesComponent: Component }),
+  setSeriesData: data => set({ seriesData: data }),
+  setSeriesComponent: Component => set({ seriesComponent: Component }),
 }));
 
-useTabStore.subscribe((state) => {
+useTabStore.subscribe(state => {
   const activeTab = state.activeTab;
 
   useSeriesStore
     .getState()
-    .setSeriesComponent(basicSeriesMap.get(activeTab)?.Component ?? null);
+    .setSeriesComponent(basicSeriesMap[activeTab]?.Component ?? null);
   useSeriesStore.getState().setSeriesData(getSeriesDataByTab(activeTab));
 });
 
